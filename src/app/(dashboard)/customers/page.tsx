@@ -52,8 +52,8 @@ export default async function CustomersPage() {
                           <p className="truncate text-xs text-muted-foreground">{customer.email || "-"}</p>
                           <p className="text-xs text-muted-foreground">{customer.phone || "-"}</p>
                         </div>
-                        <div className="shrink-0 text-right">
-                          <p className="text-sm font-semibold">{formatCurrency(totalSpend)}</p>
+                        <div className="max-w-[48%] shrink-0 text-right">
+                          <p className="truncate text-sm font-semibold">{formatCurrency(totalSpend)}</p>
                           <p className="text-xs text-muted-foreground">{customer.receipts.length} receipt{customer.receipts.length !== 1 ? "s" : ""}</p>
                           {lastPurchase ? (
                             <p className="text-xs text-muted-foreground">{formatDate(lastPurchase)}</p>

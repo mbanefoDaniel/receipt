@@ -94,8 +94,8 @@ export default async function ReceiptsPage({ searchParams }: { searchParams: Sea
                         <span className="text-xs text-muted-foreground">{formatDate(receipt.issuedAt)}</span>
                       </div>
                     </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-sm font-semibold">{formatCurrency(Number(receipt.total))}</p>
+                    <div className="max-w-[48%] shrink-0 text-right">
+                      <p className="truncate text-sm font-semibold">{formatCurrency(Number(receipt.total))}</p>
                       <div className="mt-1 flex justify-end gap-1">
                         <Link href={`/receipts/${receipt.id}`}>
                           <Button size="sm" variant="outline" className="h-7 px-2 text-xs">View</Button>

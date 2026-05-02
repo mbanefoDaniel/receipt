@@ -76,37 +76,37 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
       <Card className="overflow-hidden rounded-2xl border shadow-soft print:shadow-none" data-receipt-print>
         <CardHeader className="border-b bg-muted/30">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-3xl tracking-tight">{settingsPayload.businessName}</CardTitle>
+            <div className="min-w-0">
+              <CardTitle className="break-words text-3xl tracking-tight">{settingsPayload.businessName}</CardTitle>
               {settingsPayload.motto ? <p className="text-sm italic text-muted-foreground">{settingsPayload.motto}</p> : null}
               <p className="text-sm text-muted-foreground">Receipt #{receipt.receiptNumber}</p>
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              <div className="mt-2 flex max-w-full flex-wrap gap-x-4 gap-y-1 text-xs leading-relaxed text-muted-foreground">
                 {settingsPayload.contactPhone ? (
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5 break-words">
                     <Phone className="h-3 w-3 shrink-0" />
                     {settingsPayload.contactPhone}
                   </span>
                 ) : null}
                 {settingsPayload.contactPhoneAlt ? (
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5 break-words">
                     <Smartphone className="h-3 w-3 shrink-0" />
                     {settingsPayload.contactPhoneAlt}
                   </span>
                 ) : null}
                 {settingsPayload.socialHandle ? (
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5 break-words">
                     <AtSign className="h-3 w-3 shrink-0" />
                     {settingsPayload.socialHandle}
                   </span>
                 ) : null}
                 {settingsPayload.contactEmail ? (
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5 break-words">
                     <Mail className="h-3 w-3 shrink-0" />
                     {settingsPayload.contactEmail}
                   </span>
                 ) : null}
                 {settingsPayload.address ? (
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5 break-words">
                     <MapPin className="h-3 w-3 shrink-0" />
                     {settingsPayload.address}
                   </span>
