@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
       items: {
         create: payload.items.map((item) => ({
           description: item.description,
+          serialNumber: item.serialNumber || null,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           lineTotal: item.quantity * item.unitPrice

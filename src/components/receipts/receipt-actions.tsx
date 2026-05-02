@@ -39,8 +39,9 @@ export function ReceiptActions(props: ReceiptActionsProps) {
 
             body {
               margin: 0;
-              padding: 0;
+              padding: 16px;
               font-family: Manrope, "Segoe UI", Arial, sans-serif;
+              font-size: 13px;
               color: #0f172a;
               background: #ffffff;
             }
@@ -54,27 +55,55 @@ export function ReceiptActions(props: ReceiptActionsProps) {
               background: #ffffff;
             }
 
+            /* header section */
             .receipt-root > div:first-child {
               border-bottom: 1px solid #e2e8f0;
-              background: linear-gradient(90deg, #f8fafc 0%, #ffffff 100%);
-              padding: 20px;
+              background: #f8fafc;
+              padding: 20px 24px;
             }
 
+            /* content section */
             .receipt-root > div:last-child {
-              padding: 20px;
+              padding: 20px 24px;
             }
 
-            h3 {
-              margin: 0;
-              font-size: 26px;
-              letter-spacing: -0.02em;
+            h3 { margin: 0; font-size: 26px; letter-spacing: -0.02em; }
+            p  { margin: 2px 0; line-height: 1.4; }
+
+            /* info cards (customer, issued, notes, warranty, totals, verify) */
+            .rounded-xl {
+              border-radius: 12px;
+              border: 1px solid #e2e8f0;
+              background: #f8fafc;
+              padding: 14px 16px;
+              margin-bottom: 12px;
             }
 
-            p {
-              margin: 2px 0;
-              line-height: 1.35;
-            }
+            /* layout grids — flatten to stacked for print */
+            .grid { display: block; }
 
+            /* contact chips */
+            .flex { display: flex; }
+            .flex-wrap { flex-wrap: wrap; }
+            .gap-x-4 { column-gap: 16px; }
+            .gap-y-1 { row-gap: 4px; }
+            .items-center { align-items: center; }
+            .gap-1\\.5 { gap: 6px; }
+            .shrink-0 { flex-shrink: 0; }
+
+            /* typography */
+            .font-semibold { font-weight: 600; }
+            .font-medium   { font-weight: 500; }
+            .text-xs       { font-size: 11px; }
+            .text-sm       { font-size: 12px; }
+            .text-lg       { font-size: 16px; }
+            .uppercase     { text-transform: uppercase; }
+            .tracking-wide { letter-spacing: 0.05em; }
+            .text-muted-foreground { color: #64748b; }
+            .text-primary  { color: #3b82f6; }
+            .italic        { font-style: italic; }
+
+            /* table */
             table {
               width: 100%;
               border-collapse: collapse;
@@ -82,35 +111,33 @@ export function ReceiptActions(props: ReceiptActionsProps) {
               border-radius: 12px;
               overflow: hidden;
             }
-
-            thead tr {
-              background: #0f172a;
-              color: #ffffff;
-            }
-
-            th,
-            td {
+            thead tr { background: #0f172a; color: #ffffff; }
+            th, td {
               border: 1px solid #e2e8f0;
-              padding: 10px 12px;
+              padding: 10px 14px;
               text-align: left;
-              font-size: 13px;
+              font-size: 12px;
             }
+            td:last-child, th:last-child { text-align: right; }
+            tbody tr:nth-child(odd) { background: #f8fafc; }
 
-            tbody tr:nth-child(odd) {
-              background: #f8fafc;
-            }
+            /* totals row */
+            .border-t { border-top: 1px solid #e2e8f0; }
+            .pt-2 { padding-top: 8px; }
+            .mt-1 { margin-top: 4px; }
+            .mt-2 { margin-top: 8px; }
+            .justify-between { justify-content: space-between; }
 
-            img {
-              max-width: 100%;
-              height: auto;
-              object-fit: contain;
-            }
+            /* QR + verify row */
+            img { max-width: 100%; height: auto; object-fit: contain; }
+
+            /* hide buttons */
+            button, a[href] { }
+            .print\\:hidden { display: none !important; }
 
             @media print {
-              .receipt-root {
-                border: 0;
-                border-radius: 0;
-              }
+              body { padding: 0; }
+              .receipt-root { border: 0; border-radius: 0; }
             }
           </style>
         </head>

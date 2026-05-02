@@ -40,9 +40,10 @@ type DownloadPdfButtonProps = {
     address?: string | null;
   };
   verifyUrl: string;
+  qrDataUrl?: string;
 };
 
-export function DownloadPdfButton({ receipt, settings, verifyUrl }: DownloadPdfButtonProps) {
+export function DownloadPdfButton({ receipt, settings, verifyUrl, qrDataUrl }: DownloadPdfButtonProps) {
   const [mounted, setMounted] = useState(false);
   const [PDFDownloadLinkComponent, setPDFDownloadLinkComponent] = useState<ComponentType<PDFDownloadLinkProps> | null>(null);
 
@@ -76,7 +77,7 @@ export function DownloadPdfButton({ receipt, settings, verifyUrl }: DownloadPdfB
 
   return (
     <PDFDownloadLinkComponent
-      document={<ReceiptPdfDocument receipt={receipt} settings={settings} verifyUrl={verifyUrl} />}
+      document={<ReceiptPdfDocument receipt={receipt} settings={settings} verifyUrl={verifyUrl} qrDataUrl={qrDataUrl} />}
       fileName={`${receipt.receiptNumber}.pdf`}
     >
       {({ loading }: { loading: boolean }) => (

@@ -28,6 +28,7 @@ export type ReceiptWithRelations = {
   items: Array<{
     id: string;
     description: string;
+    serialNumber: string | null;
     quantity: number;
     unitPrice: number;
     lineTotal: number;

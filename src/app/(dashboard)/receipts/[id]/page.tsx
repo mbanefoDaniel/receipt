@@ -70,7 +70,7 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card/70 px-4 py-3 shadow-soft backdrop-blur-sm">
         <h2 className="text-2xl font-semibold tracking-tight">{receipt.receiptNumber}</h2>
-        <ReceiptActions receipt={receiptPayload} settings={settingsPayload} verifyUrl={verifyUrl} />
+        <ReceiptActions receipt={receiptPayload} settings={settingsPayload} verifyUrl={verifyUrl} qrDataUrl={qrDataUrl} />
       </div>
 
       <Card className="overflow-hidden rounded-2xl border shadow-soft print:shadow-none" data-receipt-print>
@@ -80,36 +80,36 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
               <CardTitle className="text-3xl tracking-tight">{settingsPayload.businessName}</CardTitle>
               {settingsPayload.motto ? <p className="text-sm italic text-muted-foreground">{settingsPayload.motto}</p> : null}
               <p className="text-sm text-muted-foreground">Receipt #{receipt.receiptNumber}</p>
-              <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                 {settingsPayload.contactPhone ? (
-                  <p className="inline-flex items-center gap-1.5">
-                    <Phone className="h-3 w-3" />
-                    Phone: {settingsPayload.contactPhone}
-                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <Phone className="h-3 w-3 shrink-0" />
+                    {settingsPayload.contactPhone}
+                  </span>
                 ) : null}
                 {settingsPayload.contactPhoneAlt ? (
-                  <p className="inline-flex items-center gap-1.5">
-                    <Smartphone className="h-3 w-3" />
-                    Alt Phone: {settingsPayload.contactPhoneAlt}
-                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <Smartphone className="h-3 w-3 shrink-0" />
+                    {settingsPayload.contactPhoneAlt}
+                  </span>
                 ) : null}
                 {settingsPayload.socialHandle ? (
-                  <p className="inline-flex items-center gap-1.5">
-                    <AtSign className="h-3 w-3" />
-                    Social: {settingsPayload.socialHandle}
-                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <AtSign className="h-3 w-3 shrink-0" />
+                    {settingsPayload.socialHandle}
+                  </span>
                 ) : null}
                 {settingsPayload.contactEmail ? (
-                  <p className="inline-flex items-center gap-1.5">
-                    <Mail className="h-3 w-3" />
-                    Email: {settingsPayload.contactEmail}
-                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <Mail className="h-3 w-3 shrink-0" />
+                    {settingsPayload.contactEmail}
+                  </span>
                 ) : null}
                 {settingsPayload.address ? (
-                  <p className="inline-flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3" />
-                    Address: {settingsPayload.address}
-                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    {settingsPayload.address}
+                  </span>
                 ) : null}
               </div>
             </div>
@@ -122,7 +122,7 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
                 className="h-auto w-24 rounded-md border bg-white p-1"
               />
             ) : (
-              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-md border bg-slate-50 text-2xl font-semibold">
+              <div className="flex h-[72px] w-[72px] items-center justify-center rounded-md border bg-muted text-2xl font-semibold">
                 NG
               </div>
             )}
@@ -131,14 +131,14 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
 
         <CardContent className="space-y-6 pt-6">
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl border bg-slate-50/70 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Customer</p>
+            <div className="rounded-xl border bg-muted/40 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Customer</p>
               <p className="mt-1 font-medium">{receipt.customer.name}</p>
               <p className="text-sm text-muted-foreground">{receipt.customer.email || "No email"}</p>
               <p className="text-sm text-muted-foreground">{receipt.customer.phone || "No phone"}</p>
             </div>
-            <div className="rounded-xl border bg-slate-50/70 p-4 text-left md:text-right">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Issued</p>
+            <div className="rounded-xl border bg-muted/40 p-4 text-left md:text-right">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Issued</p>
               <p className="mt-1 font-medium">{formatDate(receipt.issuedAt)}</p>
               <p className="text-sm text-muted-foreground">Payment: {receipt.paymentMethod}</p>
             </div>
@@ -156,7 +156,7 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
               </thead>
               <tbody>
                 {receipt.items.map((item) => (
-                  <tr key={item.id} className="border-t odd:bg-slate-50/40">
+                  <tr key={item.id} className="border-t odd:bg-muted/30">
                     <td className="px-4 py-3">{item.description}</td>
                     <td className="px-4 py-3">{item.quantity}</td>
                     <td className="px-4 py-3">{formatCurrency(Number(item.unitPrice))}</td>
@@ -169,16 +169,16 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
 
           <div className="grid gap-4 md:grid-cols-[1fr_280px]">
             <div className="space-y-4">
-              <div className="rounded-xl border bg-slate-50/70 p-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Notes</p>
-                <p className="text-sm">{receipt.notes || "No additional notes."}</p>
+              <div className="rounded-xl border bg-muted/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes</p>
+                <p className="mt-1 text-sm">{receipt.notes || "No additional notes."}</p>
               </div>
-              <div className="rounded-xl border bg-slate-50/70 p-4">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Warranty</p>
-                <p className="text-sm">{receipt.warrantyNotes || "No warranty notes."}</p>
+              <div className="rounded-xl border bg-muted/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Warranty</p>
+                <p className="mt-1 text-sm">{receipt.warrantyNotes || "No warranty notes."}</p>
               </div>
             </div>
-            <div className="rounded-xl border bg-slate-50/70 p-4">
+            <div className="rounded-xl border bg-muted/40 p-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>{formatCurrency(Number(receipt.subtotal))}</span>
@@ -194,10 +194,13 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-slate-50/70 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-muted/40 p-4">
             <div>
-              <p className="text-sm font-medium">Verification Link</p>
-              <Link className="text-xs text-primary" href={verifyUrl}>
+              <p className="text-sm font-semibold">Scan to verify this receipt</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Confirm this receipt is genuinely from {settingsPayload.businessName}
+              </p>
+              <Link className="mt-1 block text-xs text-primary break-all" href={verifyUrl}>
                 {verifyUrl}
               </Link>
             </div>

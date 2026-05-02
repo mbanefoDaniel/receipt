@@ -23,7 +23,7 @@ const defaultValues: CreateReceiptInput = {
   discount: 0,
   notes: "",
   warrantyNotes: "",
-  items: [{ description: "", quantity: 1, unitPrice: 0 }]
+  items: [{ description: "", serialNumber: "", quantity: 1, unitPrice: 0 }]
 };
 
 export function ReceiptForm({ defaultWarranty }: { defaultWarranty?: string | null }) {
@@ -96,8 +96,9 @@ export function ReceiptForm({ defaultWarranty }: { defaultWarranty?: string | nu
         </CardHeader>
         <CardContent className="space-y-3">
           {fields.map((field, index) => (
-            <div key={field.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[1.8fr_0.6fr_0.8fr_auto]">
+            <div key={field.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[1.8fr_1fr_0.6fr_0.8fr_auto]">
               <Input {...form.register(`items.${index}.description`)} placeholder="Item description" />
+              <Input {...form.register(`items.${index}.serialNumber`)} placeholder="Serial no. (optional)" />
               <Input {...form.register(`items.${index}.quantity`)} type="number" min={1} />
               <Input {...form.register(`items.${index}.unitPrice`)} type="number" min={0} step="0.01" />
               <Button
@@ -115,7 +116,7 @@ export function ReceiptForm({ defaultWarranty }: { defaultWarranty?: string | nu
           <Button
             type="button"
             variant="outline"
-            onClick={() => append({ description: "", quantity: 1, unitPrice: 0 })}
+            onClick={() => append({ description: "", serialNumber: "", quantity: 1, unitPrice: 0 })}
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Item

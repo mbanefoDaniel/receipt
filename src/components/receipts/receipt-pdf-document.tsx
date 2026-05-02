@@ -35,6 +35,7 @@ type ReceiptPdfDocumentProps = {
     address?: string | null;
   };
   verifyUrl: string;
+  qrDataUrl?: string;
 };
 
 const styles = StyleSheet.create({
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
 const currency = (value: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(value || 0);
 
-export function ReceiptPdfDocument({ receipt, settings, verifyUrl }: ReceiptPdfDocumentProps) {
+export function ReceiptPdfDocument({ receipt, settings, verifyUrl, qrDataUrl }: ReceiptPdfDocumentProps) {
   const canUseLogoInPdf = Boolean(settings.logoUrl && !settings.logoUrl.toLowerCase().endsWith(".svg"));
 
   return (
@@ -165,8 +166,14 @@ export function ReceiptPdfDocument({ receipt, settings, verifyUrl }: ReceiptPdfD
           <Text>{receipt.notes || "No additional notes."}</Text>
           <Text style={{ marginTop: 8, fontWeight: "bold", marginBottom: 4 }}>Warranty</Text>
           <Text>{receipt.warrantyNotes || "No warranty notes."}</Text>
-          <Text style={[styles.small, { marginTop: 10 }]}>Verify: {verifyUrl}</Text>
-          <Text style={[styles.small, { marginTop: 3 }]}>{settings.footerText}</Text>
+          <View style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 10, gap: 8 }}>
+            {qrDataUrl ? <Image src={qrDataUrl} style={{ width: 56, height: 56 }} /> : null}
+            <View>
+              <Text style={styles.small}>Scan to verify receipt</Text>
+              <Text style={[styles.small, { marginTop: 2 }]}>{verifyUrl}</Text>
+            </View>
+          </View>
+          <Text style={[styles.small, { marginTop: 8 }]}>{settings.footerText}</Text>
         </View>
       </Page>
     </Document>

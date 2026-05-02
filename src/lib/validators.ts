@@ -7,6 +7,7 @@ export const loginSchema = z.object({
 
 export const receiptItemSchema = z.object({
   description: z.string().min(2, "Description is required"),
+  serialNumber: z.string().optional(),
   quantity: z.coerce.number().int().positive("Quantity must be at least 1"),
   unitPrice: z.coerce.number().nonnegative("Unit price cannot be negative")
 });
