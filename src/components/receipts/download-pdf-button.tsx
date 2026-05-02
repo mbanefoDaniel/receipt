@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ComponentType } from "react";
+import type { PDFDownloadLinkProps } from "@react-pdf/renderer";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReceiptPdfDocument } from "@/components/receipts/receipt-pdf-document";
@@ -43,7 +44,7 @@ type DownloadPdfButtonProps = {
 
 export function DownloadPdfButton({ receipt, settings, verifyUrl }: DownloadPdfButtonProps) {
   const [mounted, setMounted] = useState(false);
-  const [PDFDownloadLinkComponent, setPDFDownloadLinkComponent] = useState<ComponentType<any> | null>(null);
+  const [PDFDownloadLinkComponent, setPDFDownloadLinkComponent] = useState<ComponentType<PDFDownloadLinkProps> | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -52,7 +53,7 @@ export function DownloadPdfButton({ receipt, settings, verifyUrl }: DownloadPdfB
     import("@react-pdf/renderer")
       .then((module) => {
         if (active) {
-          setPDFDownloadLinkComponent(() => module.PDFDownloadLink as ComponentType<any>);
+          setPDFDownloadLinkComponent(() => module.PDFDownloadLink as ComponentType<PDFDownloadLinkProps>);
         }
       })
       .catch(() => {

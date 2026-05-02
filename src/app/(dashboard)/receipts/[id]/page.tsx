@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AtSign, Mail, MapPin, Phone, Smartphone } from "lucide-react";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -79,12 +80,37 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
               <CardTitle className="text-3xl tracking-tight">{settingsPayload.businessName}</CardTitle>
               {settingsPayload.motto ? <p className="text-sm italic text-muted-foreground">{settingsPayload.motto}</p> : null}
               <p className="text-sm text-muted-foreground">Receipt #{receipt.receiptNumber}</p>
-              <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
-                {settingsPayload.contactPhone ? <p>Phone: {settingsPayload.contactPhone}</p> : null}
-                {settingsPayload.contactPhoneAlt ? <p>Alt Phone: {settingsPayload.contactPhoneAlt}</p> : null}
-                {settingsPayload.socialHandle ? <p>Social: {settingsPayload.socialHandle}</p> : null}
-                {settingsPayload.contactEmail ? <p>Email: {settingsPayload.contactEmail}</p> : null}
-                {settingsPayload.address ? <p>Address: {settingsPayload.address}</p> : null}
+              <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                {settingsPayload.contactPhone ? (
+                  <p className="inline-flex items-center gap-1.5">
+                    <Phone className="h-3 w-3" />
+                    Phone: {settingsPayload.contactPhone}
+                  </p>
+                ) : null}
+                {settingsPayload.contactPhoneAlt ? (
+                  <p className="inline-flex items-center gap-1.5">
+                    <Smartphone className="h-3 w-3" />
+                    Alt Phone: {settingsPayload.contactPhoneAlt}
+                  </p>
+                ) : null}
+                {settingsPayload.socialHandle ? (
+                  <p className="inline-flex items-center gap-1.5">
+                    <AtSign className="h-3 w-3" />
+                    Social: {settingsPayload.socialHandle}
+                  </p>
+                ) : null}
+                {settingsPayload.contactEmail ? (
+                  <p className="inline-flex items-center gap-1.5">
+                    <Mail className="h-3 w-3" />
+                    Email: {settingsPayload.contactEmail}
+                  </p>
+                ) : null}
+                {settingsPayload.address ? (
+                  <p className="inline-flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3" />
+                    Address: {settingsPayload.address}
+                  </p>
+                ) : null}
               </div>
             </div>
             {settingsPayload.logoUrl ? (
