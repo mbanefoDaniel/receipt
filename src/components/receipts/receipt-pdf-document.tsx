@@ -1,5 +1,19 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Font, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+
+Font.register({
+  family: "Roboto",
+  fonts: [
+    {
+      src: "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Regular.ttf",
+      fontWeight: "normal"
+    },
+    {
+      src: "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Bold.ttf",
+      fontWeight: "bold"
+    }
+  ]
+});
 
 type ReceiptPdfDocumentProps = {
   receipt: {
@@ -43,7 +57,7 @@ const styles = StyleSheet.create({
     padding: 28,
     fontSize: 10,
     color: "#0f172a",
-    fontFamily: "Helvetica"
+    fontFamily: "Roboto"
   },
   row: {
     flexDirection: "row",
@@ -82,7 +96,7 @@ const styles = StyleSheet.create({
 });
 
 const currency = (value: number) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(value || 0);
+  `\u20A6${new Intl.NumberFormat("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0)}`;
 
 export function ReceiptPdfDocument({ receipt, settings, verifyUrl, qrDataUrl }: ReceiptPdfDocumentProps) {
   const canUseLogoInPdf = Boolean(settings.logoUrl && !settings.logoUrl.toLowerCase().endsWith(".svg"));

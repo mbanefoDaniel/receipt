@@ -1,4 +1,18 @@
-import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+
+Font.register({
+  family: "Roboto",
+  fonts: [
+    {
+      src: "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Regular.ttf",
+      fontWeight: "normal"
+    },
+    {
+      src: "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Bold.ttf",
+      fontWeight: "bold"
+    }
+  ]
+});
 
 type MinimalTemplateProps = {
   businessName: string;
@@ -10,7 +24,7 @@ type MinimalTemplateProps = {
 };
 
 const styles = StyleSheet.create({
-  page: { padding: 30, fontSize: 11, fontFamily: "Helvetica" },
+  page: { padding: 30, fontSize: 11, fontFamily: "Roboto" },
   heading: { fontSize: 22, marginBottom: 10, fontWeight: 700 },
   muted: { color: "#64748b", marginBottom: 6 },
   total: { marginTop: 18, fontSize: 18, fontWeight: 700 }
