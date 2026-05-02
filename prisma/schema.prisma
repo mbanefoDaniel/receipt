@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  POS
+}
+
+model Admin {
+  id           Int      @id @default(1)
+  email        String   @unique
+  passwordHash String
+  name         String   @default("Administrator")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  receipts  Receipt[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([name])
+  @@index([email])
+  @@index([phone])
+}
+
+model Receipt {
+  id            String        @id @default(cuid())
+  receiptNumber String        @unique
+  paymentMethod PaymentMethod
+  subtotal      Decimal       @db.Decimal(12, 2)
+  discount      Decimal       @db.Decimal(12, 2)
+  total         Decimal       @db.Decimal(12, 2)
+  notes         String?
+  warrantyNotes String?
+  issuedAt      DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  items         ReceiptItem[]
+
+  @@index([issuedAt])
+  @@index([customerId])
+}
+
+model ReceiptItem {
+  id          String   @id @default(cuid())
+  receiptId   String
+  description String
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(12, 2)
+  lineTotal   Decimal  @db.Decimal(12, 2)
+  createdAt   DateTime @default(now())
+  receipt     Receipt  @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+}
+
+model BusinessSettings {
+  id              Int      @id @default(1)
+  businessName    String   @default("Your Business")
+  motto           String?
+  logoUrl         String?
+  footerText      String   @default("Thank you for your business.")
+  defaultWarranty String?  @default("No warranty unless stated otherwise.")
+  contactEmail    String?
+  contactPhone    String?
+  contactPhoneAlt String?
+  socialHandle    String?
+  address         String?
+  updatedAt       DateTime @updatedAt
+}

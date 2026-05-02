@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 33% 99%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 20% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 20% 95%;
+  --muted-foreground: 215 16% 47%;
+  --border: 214 32% 91%;
+  --ring: 221 83% 53%;
+  --destructive: 0 84% 60%;
+}
+
+.dark {
+  --background: 222 47% 8%;
+  --foreground: 210 40% 96%;
+  --card: 222 47% 12%;
+  --card-foreground: 210 40% 96%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 8%;
+  --secondary: 217 33% 20%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 217 33% 18%;
+  --muted-foreground: 215 20% 70%;
+  --border: 217 33% 22%;
+  --ring: 217 91% 60%;
+  --destructive: 0 63% 48%;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground font-sans antialiased;
+  background-image:
+    radial-gradient(circle at 8% 10%, rgba(59, 130, 246, 0.08), transparent 30%),
+    radial-gradient(circle at 92% 2%, rgba(14, 165, 233, 0.08), transparent 28%);
+}
+
+@layer utilities {
+  .card-surface {
+    @apply bg-card border rounded-xl shadow-soft;
+  }
+}
