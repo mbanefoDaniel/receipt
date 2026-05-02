@@ -15,12 +15,13 @@ export default async function LoginPage({
   return (
     <main className="relative min-h-screen overflow-hidden px-4 py-8 md:py-12">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10%] top-[-20%] h-[320px] w-[320px] rounded-full bg-cyan-500/20 blur-3xl" />
-        <div className="absolute bottom-[-20%] right-[-8%] h-[320px] w-[320px] rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0,transparent_31px,hsl(var(--border))_32px),linear-gradient(to_bottom,transparent_0,transparent_31px,hsl(var(--border))_32px)] bg-[size:32px_32px] opacity-30" />
+        <div className="absolute left-[-15%] top-[-25%] h-[420px] w-[420px] rounded-full bg-cyan-500/30 blur-3xl" />
+        <div className="absolute bottom-[-20%] right-[-10%] h-[420px] w-[420px] rounded-full bg-blue-500/30 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_18%,rgba(14,165,233,0.2),transparent_36%),radial-gradient(circle_at_78%_74%,rgba(37,99,235,0.2),transparent_36%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0,transparent_31px,hsl(var(--border))_32px),linear-gradient(to_bottom,transparent_0,transparent_31px,hsl(var(--border))_32px)] bg-[size:32px_32px] opacity-40" />
       </div>
 
-      <div className="relative mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[1.1fr_420px]">
+      <div className="relative mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[1.1fr_400px]">
         <section className="hidden rounded-2xl border bg-card/70 p-8 shadow-soft backdrop-blur-sm lg:block">
           <p className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.15em] text-muted-foreground">
             <Cpu className="h-3.5 w-3.5" />
@@ -47,7 +48,7 @@ export default async function LoginPage({
           </div>
         </section>
 
-        <Card className="w-full rounded-2xl border bg-card/85 shadow-soft backdrop-blur-sm">
+        <Card className="w-full max-w-md justify-self-center rounded-2xl border bg-card/85 shadow-soft backdrop-blur-sm sm:max-w-lg lg:max-w-none">
           <CardHeader>
             <CardTitle className="text-2xl">Admin Login</CardTitle>
             <CardDescription>Secure access to your internal receipt dashboard.</CardDescription>
