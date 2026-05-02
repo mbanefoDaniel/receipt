@@ -55,68 +55,75 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = parsed.data;
-  const subtotal = payload.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const total = Math.max(subtotal - payload.discount, 0);
 
-  const settings = await db.businessSettings.findUnique({ where: { id: 1 } });
+  try {
+    const subtotal = payload.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+    const total = Math.max(subtotal - payload.discount, 0);
 
-  const customerLookup: Prisma.CustomerWhereInput[] = [];
-  if (payload.customerEmail) {
-    customerLookup.push({ email: payload.customerEmail });
-  }
-  if (payload.customerPhone) {
-    customerLookup.push({ phone: payload.customerPhone });
-  }
+    const settings = await db.businessSettings.findUnique({ where: { id: 1 } });
 
-  const customer =
-    customerLookup.length > 0
-      ? await db.customer.findFirst({
-          where: {
-            OR: customerLookup
+    const customerLookup: Prisma.CustomerWhereInput[] = [];
+    if (payload.customerEmail) {
+      customerLookup.push({ email: payload.customerEmail });
+    }
+    if (payload.customerPhone) {
+      customerLookup.push({ phone: payload.customerPhone });
+    }
+
+    const customer =
+      customerLookup.length > 0
+        ? await db.customer.findFirst({
+            where: {
+              OR: customerLookup
+            }
+          })
+        : null;
+
+    const customerRecord = customer
+      ? await db.customer.update({
+          where: { id: customer.id },
+          data: {
+            name: payload.customerName,
+            email: payload.customerEmail || null,
+            phone: payload.customerPhone || null
           }
         })
-      : null;
+      : await db.customer.create({
+          data: {
+            name: payload.customerName,
+            email: payload.customerEmail || null,
+            phone: payload.customerPhone || null
+          }
+        });
 
-  const customerRecord = customer
-    ? await db.customer.update({
-        where: { id: customer.id },
-        data: {
-          name: payload.customerName,
-          email: payload.customerEmail || null,
-          phone: payload.customerPhone || null
+    const receiptNumber = await generateReceiptNumber();
+
+    const receipt = await db.receipt.create({
+      data: {
+        receiptNumber,
+        customerId: customerRecord.id,
+        paymentMethod: payload.paymentMethod,
+        subtotal,
+        discount: payload.discount,
+        total,
+        notes: payload.notes || null,
+        warrantyNotes: payload.warrantyNotes || settings?.defaultWarranty || null,
+        items: {
+          create: payload.items.map((item) => ({
+            description: item.description,
+            serialNumber: item.serialNumber || null,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            lineTotal: item.quantity * item.unitPrice
+          }))
         }
-      })
-    : await db.customer.create({
-        data: {
-          name: payload.customerName,
-          email: payload.customerEmail || null,
-          phone: payload.customerPhone || null
-        }
-      });
-
-  const receiptNumber = await generateReceiptNumber();
-
-  const receipt = await db.receipt.create({
-    data: {
-      receiptNumber,
-      customerId: customerRecord.id,
-      paymentMethod: payload.paymentMethod,
-      subtotal,
-      discount: payload.discount,
-      total,
-      notes: payload.notes || null,
-      warrantyNotes: payload.warrantyNotes || settings?.defaultWarranty || null,
-      items: {
-        create: payload.items.map((item) => ({
-          description: item.description,
-          serialNumber: item.serialNumber || null,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          lineTotal: item.quantity * item.unitPrice
-        }))
       }
-    }
-  });
+    });
 
-  return NextResponse.json({ id: receipt.id, receiptNumber: receipt.receiptNumber }, { status: 201 });
+    return NextResponse.json({ id: receipt.id, receiptNumber: receipt.receiptNumber }, { status: 201 });
+  } catch (err) {
+    console.error("[POST /api/receipts] error:", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

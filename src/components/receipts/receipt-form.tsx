@@ -57,7 +57,21 @@ export function ReceiptForm({ defaultWarranty }: { defaultWarranty?: string | nu
       });
 
       if (!response.ok) {
-        toast.error("Could not create receipt");
+        const errData = await response.json().catch(() => null);
+        let msg = "Could not create receipt";
+        if (errData?.error) {
+          if (typeof errData.error === "string") {
+            msg = errData.error;
+          } else if (errData.error.formErrors?.length) {
+            msg = errData.error.formErrors.join(", ");
+          } else if (errData.error.fieldErrors) {
+            const fields = Object.entries(errData.error.fieldErrors as Record<string, string[]>)
+              .map(([k, v]) => `${k}: ${v.join(", ")}`)
+              .join("; ");
+            msg = fields || msg;
+          }
+        }
+        toast.error(msg);
         return;
       }
 
