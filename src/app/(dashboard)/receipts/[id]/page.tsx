@@ -201,7 +201,7 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
                 Confirm this receipt is genuinely from {settingsPayload.businessName}
               </p>
               <Link className="mt-1 block text-xs text-primary break-all" href={verifyUrl}>
-                {verifyUrl}
+                {receipt.receiptNumber}
               </Link>
             </div>
             <Image src={qrDataUrl} alt="Receipt QR" width={84} height={84} />
