@@ -16,6 +16,10 @@ export function ReceiptActions(props: ReceiptActionsProps) {
       @media print {
         body > *:not(#__receipt-print-root__) { display: none !important; }
         #__receipt-print-root__ { display: block !important; }
+        #__receipt-print-root__,
+        #__receipt-print-root__ * {
+          font-family: "Segoe UI", "Segoe UI Symbol", Arial, sans-serif !important;
+        }
       }
     `;
 

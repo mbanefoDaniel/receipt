@@ -2,14 +2,14 @@
 import { Document, Font, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 Font.register({
-  family: "Roboto",
+  family: "DejaVuSans",
   fonts: [
     {
-      src: "https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.1.0/files/roboto-latin-400-normal.woff",
+      src: "https://cdn.jsdelivr.net/gh/dejavu-fonts/dejavu-fonts@version_2_37/ttf/DejaVuSans.ttf",
       fontWeight: "normal"
     },
     {
-      src: "https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.1.0/files/roboto-latin-700-normal.woff",
+      src: "https://cdn.jsdelivr.net/gh/dejavu-fonts/dejavu-fonts@version_2_37/ttf/DejaVuSans-Bold.ttf",
       fontWeight: "bold"
     }
   ]
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     padding: 28,
     fontSize: 10,
     color: "#0f172a",
-    fontFamily: "Roboto"
+    fontFamily: "DejaVuSans"
   },
   row: {
     flexDirection: "row",
