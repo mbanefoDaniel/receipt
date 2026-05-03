@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getRequestSession } from "@/lib/auth";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { createReceiptSchema } from "@/lib/validators";
 import { generateReceiptNumber } from "@/lib/receipt";
 
@@ -46,6 +47,20 @@ export async function POST(request: NextRequest) {
   const session = await getRequestSession(request);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rateLimit = consumeRateLimit({
+    key: `receipt:create:${session.adminId}:${forwardedFor}`,
+    limit: 30,
+    windowMs: 10 * 60 * 1000
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many create requests. Please try again shortly." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.retryAfterMs / 1000)) } }
+    );
   }
 
   const json = await request.json();

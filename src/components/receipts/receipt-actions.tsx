@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Printer, Share2 } from "lucide-react";
+import { Copy, MessageCircle, Printer, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DownloadPdfButton } from "@/components/receipts/download-pdf-button";
 import { ReceiptPdfDocument } from "@/components/receipts/receipt-pdf-document";
@@ -11,6 +12,49 @@ type ReceiptActionsProps = React.ComponentProps<typeof DownloadPdfButton>;
 export function ReceiptActions(props: ReceiptActionsProps) {
   const { receipt, settings, verifyUrl } = props;
   const [sharing, setSharing] = useState(false);
+
+  function buildShareUrl() {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+    try {
+      const parsed = new URL(verifyUrl);
+      if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
+        return `${origin}${parsed.pathname}`;
+      }
+      return parsed.toString();
+    } catch {
+      if (verifyUrl.startsWith("/")) {
+        return `${origin}${verifyUrl}`;
+      }
+      return verifyUrl;
+    }
+  }
+
+  function buildShareText(shareUrl: string) {
+    return (
+      `Receipt from ${settings.businessName}\n` +
+      `Customer: ${receipt.customer.name}\n` +
+      `Amount: NGN ${receipt.total.toLocaleString("en-NG", { minimumFractionDigits: 2 })}\n` +
+      `Verify: ${shareUrl}`
+    );
+  }
+
+  async function handleCopyLink() {
+    const shareUrl = buildShareUrl();
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Verify link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  }
+
+  function handleWhatsApp() {
+    const shareUrl = buildShareUrl();
+    const shareText = buildShareText(shareUrl);
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
+  }
 
   function handlePrint() {
     const style = document.createElement("style");
@@ -54,26 +98,8 @@ export function ReceiptActions(props: ReceiptActionsProps) {
   }
 
   async function handleShare() {
-    const shareUrl = (() => {
-      try {
-        const parsed = new URL(verifyUrl);
-        if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
-          return `${window.location.origin}${parsed.pathname}`;
-        }
-        return parsed.toString();
-      } catch {
-        if (verifyUrl.startsWith("/")) {
-          return `${window.location.origin}${verifyUrl}`;
-        }
-        return verifyUrl;
-      }
-    })();
-
-    const text =
-      `Receipt from ${settings.businessName}\n` +
-      `Customer: ${receipt.customer.name}\n` +
-      `Amount: NGN ${receipt.total.toLocaleString("en-NG", { minimumFractionDigits: 2 })}\n` +
-      `Verify: ${shareUrl}`;
+    const shareUrl = buildShareUrl();
+    const shareText = buildShareText(shareUrl);
 
     if (sharing) {
       return;
@@ -92,13 +118,15 @@ export function ReceiptActions(props: ReceiptActionsProps) {
         if (!navigator.canShare || navigator.canShare({ files: [file] })) {
           await navigator.share({
             title: `Receipt ${receipt.receiptNumber}`,
-            text,
+            text: shareText,
             files: [file]
           });
+          toast.success("Receipt shared");
           return;
         }
 
-        await navigator.share({ title: `Receipt ${receipt.receiptNumber}`, text, url: shareUrl });
+        await navigator.share({ title: `Receipt ${receipt.receiptNumber}`, text: shareText, url: shareUrl });
+        toast.success("Receipt shared");
         return;
       }
     } catch (error) {
@@ -106,12 +134,13 @@ export function ReceiptActions(props: ReceiptActionsProps) {
       if (errorName === "AbortError") {
         return;
       }
+      toast.error("Native share failed. Opening WhatsApp fallback.");
     } finally {
       setSharing(false);
     }
 
     // Fallback: open WhatsApp directly
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    handleWhatsApp();
   }
 
   return (
@@ -123,6 +152,14 @@ export function ReceiptActions(props: ReceiptActionsProps) {
       <Button type="button" variant="secondary" onClick={handleShare} disabled={sharing}>
         <Share2 className="mr-2 h-4 w-4" />
         {sharing ? "Sharing..." : "Share"}
+      </Button>
+      <Button type="button" variant="secondary" onClick={handleWhatsApp}>
+        <MessageCircle className="mr-2 h-4 w-4" />
+        WhatsApp
+      </Button>
+      <Button type="button" variant="secondary" onClick={handleCopyLink}>
+        <Copy className="mr-2 h-4 w-4" />
+        Copy Link
       </Button>
       <DownloadPdfButton {...props} />
     </div>

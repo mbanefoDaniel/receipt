@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { getRequestSession } from "@/lib/auth";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { settingsSchema } from "@/lib/validators";
 
 export async function GET(request: NextRequest) {
@@ -22,6 +23,20 @@ export async function PATCH(request: NextRequest) {
   const session = await getRequestSession(request);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rateLimit = consumeRateLimit({
+    key: `settings:update:${session.adminId}:${forwardedFor}`,
+    limit: 20,
+    windowMs: 10 * 60 * 1000
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many settings updates. Please try again shortly." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.retryAfterMs / 1000)) } }
+    );
   }
 
   const json = await request.json();

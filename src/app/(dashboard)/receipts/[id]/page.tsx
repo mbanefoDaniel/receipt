@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { AtSign, Mail, MapPin, Phone, Smartphone } from "lucide-react";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
@@ -28,7 +29,12 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
     notFound();
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const envAppUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
+  const proto = requestHeaders.get("x-forwarded-proto") ?? "https";
+  const requestOrigin = `${proto}://${host}`;
+  const appUrl = envAppUrl.includes("localhost") ? requestOrigin : envAppUrl;
   const verifyUrl = `${appUrl}/verify/${receipt.receiptNumber}`;
   const qrDataUrl = await QRCode.toDataURL(verifyUrl);
 

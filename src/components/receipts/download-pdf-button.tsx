@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ReceiptPdfDocument } from "@/components/receipts/receipt-pdf-document";
 
@@ -65,8 +66,10 @@ export function DownloadPdfButton({ receipt, settings, verifyUrl, qrDataUrl }: D
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      toast.success("PDF download started");
     } catch (e) {
       console.error("PDF generation failed", e);
+      toast.error("Could not generate PDF. Please try again.");
     } finally {
       setLoading(false);
     }
