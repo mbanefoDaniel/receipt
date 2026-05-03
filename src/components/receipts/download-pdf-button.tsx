@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ComponentType } from "react";
-import type { PDFDownloadLinkProps } from "@react-pdf/renderer";
+import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReceiptPdfDocument } from "@/components/receipts/receipt-pdf-document";
@@ -45,28 +44,35 @@ type DownloadPdfButtonProps = {
 
 export function DownloadPdfButton({ receipt, settings, verifyUrl, qrDataUrl }: DownloadPdfButtonProps) {
   const [mounted, setMounted] = useState(false);
-  const [PDFDownloadLinkComponent, setPDFDownloadLinkComponent] = useState<ComponentType<PDFDownloadLinkProps> | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    let active = true;
-
-    import("@react-pdf/renderer")
-      .then((module) => {
-        if (active) {
-          setPDFDownloadLinkComponent(() => module.PDFDownloadLink as ComponentType<PDFDownloadLinkProps>);
-        }
-      })
-      .catch(() => {
-        setPDFDownloadLinkComponent(null);
-      });
-
-    return () => {
-      active = false;
-    };
   }, []);
 
-  if (!mounted || !PDFDownloadLinkComponent) {
+  async function handleDownload() {
+    setLoading(true);
+    try {
+      const { pdf } = await import("@react-pdf/renderer");
+      const blob = await pdf(
+        <ReceiptPdfDocument receipt={receipt} settings={settings} verifyUrl={verifyUrl} qrDataUrl={qrDataUrl} />
+      ).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${receipt.receiptNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("PDF generation failed", e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!mounted) {
     return (
       <Button variant="outline" type="button" disabled>
         <Download className="mr-2 h-4 w-4" />
@@ -76,16 +82,9 @@ export function DownloadPdfButton({ receipt, settings, verifyUrl, qrDataUrl }: D
   }
 
   return (
-    <PDFDownloadLinkComponent
-      document={<ReceiptPdfDocument receipt={receipt} settings={settings} verifyUrl={verifyUrl} qrDataUrl={qrDataUrl} />}
-      fileName={`${receipt.receiptNumber}.pdf`}
-    >
-      {({ loading }: { loading: boolean }) => (
-        <Button variant="outline" type="button">
-          <Download className="mr-2 h-4 w-4" />
-          {loading ? "Preparing PDF..." : "Download PDF"}
-        </Button>
-      )}
-    </PDFDownloadLinkComponent>
+    <Button variant="outline" type="button" onClick={handleDownload} disabled={loading}>
+      <Download className="mr-2 h-4 w-4" />
+      {loading ? "Generating..." : "Download PDF"}
+    </Button>
   );
 }
