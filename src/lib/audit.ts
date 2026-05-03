@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { db } from "./db";
 
 type AuditAction =
@@ -26,7 +27,7 @@ export function logAudit(options: AuditOptions): void {
         action: options.action,
         adminId: options.adminId ?? null,
         ip: options.ip ?? null,
-        meta: options.meta ?? null
+        meta: options.meta ?? Prisma.JsonNull
       }
     })
     .catch(() => {
