@@ -1,19 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Document, Font, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-
-Font.register({
-  family: "DejaVuSans",
-  fonts: [
-    {
-      src: "https://cdn.jsdelivr.net/gh/dejavu-fonts/dejavu-fonts@version_2_37/ttf/DejaVuSans.ttf",
-      fontWeight: "normal"
-    },
-    {
-      src: "https://cdn.jsdelivr.net/gh/dejavu-fonts/dejavu-fonts@version_2_37/ttf/DejaVuSans-Bold.ttf",
-      fontWeight: "bold"
-    }
-  ]
-});
+import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 type ReceiptPdfDocumentProps = {
   receipt: {
@@ -57,7 +43,7 @@ const styles = StyleSheet.create({
     padding: 28,
     fontSize: 10,
     color: "#0f172a",
-    fontFamily: "DejaVuSans"
+    fontFamily: "Helvetica"
   },
   row: {
     flexDirection: "row",
@@ -96,7 +82,7 @@ const styles = StyleSheet.create({
 });
 
 const currency = (value: number) =>
-  `\u20A6${new Intl.NumberFormat("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0)}`;
+  `NGN ${new Intl.NumberFormat("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0)}`;
 
 export function ReceiptPdfDocument({ receipt, settings, verifyUrl, qrDataUrl }: ReceiptPdfDocumentProps) {
   const canUseLogoInPdf = Boolean(settings.logoUrl && !settings.logoUrl.toLowerCase().endsWith(".svg"));
