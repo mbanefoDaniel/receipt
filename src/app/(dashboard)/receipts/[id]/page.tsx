@@ -35,7 +35,7 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
   const proto = requestHeaders.get("x-forwarded-proto") ?? "https";
   const requestOrigin = `${proto}://${host}`;
   const appUrl = envAppUrl.includes("localhost") ? requestOrigin : envAppUrl;
-  const verifyUrl = `${appUrl}/verify/${receipt.receiptNumber}`;
+  const verifyUrl = `${appUrl}/verify/${receipt.verifyToken}`;
   const qrDataUrl = await QRCode.toDataURL(verifyUrl);
 
   const settingsPayload = {

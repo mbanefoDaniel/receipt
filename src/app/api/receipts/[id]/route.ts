@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { getRequestSession } from "@/lib/auth";
 import { consumeRateLimit } from "@/lib/rate-limit";
+import { logAudit } from "@/lib/audit";
 
 export async function GET(
   request: NextRequest,
@@ -38,7 +39,7 @@ export async function DELETE(
   }
 
   const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const rateLimit = consumeRateLimit({
+  const rateLimit = await consumeRateLimit({
     key: `receipt:delete:${session.adminId}:${forwardedFor}`,
     limit: 20,
     windowMs: 10 * 60 * 1000
@@ -53,5 +54,6 @@ export async function DELETE(
 
   const { id } = await params;
   await db.receipt.delete({ where: { id } });
+  logAudit({ action: "receipt.delete", adminId: session.adminId, ip: forwardedFor, meta: { receiptId: id } });
   return NextResponse.json({ ok: true });
 }

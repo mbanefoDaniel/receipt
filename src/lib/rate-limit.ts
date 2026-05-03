@@ -1,7 +1,4 @@
-type RateLimitEntry = {
-  count: number;
-  resetAt: number;
-};
+import { db } from "./db";
 
 type RateLimitInput = {
   key: string;
@@ -15,39 +12,50 @@ type RateLimitResult = {
   retryAfterMs: number;
 };
 
-type GlobalWithRateLimitStore = typeof globalThis & {
-  __receiptRateLimitStore?: Map<string, RateLimitEntry>;
-};
+/**
+ * Persistent, cross-instance rate limiter backed by the database.
+ * Safe on serverless (Vercel) where in-memory state resets per cold start.
+ */
+export async function consumeRateLimit(input: RateLimitInput): Promise<RateLimitResult> {
+  const now = new Date();
+  const resetAt = new Date(now.getTime() + input.windowMs);
 
-const globalStore = globalThis as GlobalWithRateLimitStore;
-const store = globalStore.__receiptRateLimitStore ?? new Map<string, RateLimitEntry>();
-globalStore.__receiptRateLimitStore = store;
+  try {
+    const result = await db.$transaction(async (tx) => {
+      const existing = await tx.rateLimit.findUnique({ where: { key: input.key } });
 
-export function consumeRateLimit(input: RateLimitInput): RateLimitResult {
-  const now = Date.now();
-  const existing = store.get(input.key);
+      if (!existing || existing.resetAt < now) {
+        await tx.rateLimit.upsert({
+          where: { key: input.key },
+          update: { count: 1, resetAt },
+          create: { key: input.key, count: 1, resetAt }
+        });
+        return { count: 1, resetAt };
+      }
 
-  if (!existing || now >= existing.resetAt) {
-    const resetAt = now + input.windowMs;
-    store.set(input.key, { count: 1, resetAt });
+      const updated = await tx.rateLimit.update({
+        where: { key: input.key },
+        data: { count: { increment: 1 } }
+      });
+      return { count: updated.count, resetAt: updated.resetAt };
+    });
+
+    const allowed = result.count <= input.limit;
     return {
-      allowed: true,
-      remaining: Math.max(input.limit - 1, 0),
-      retryAfterMs: input.windowMs
+      allowed,
+      remaining: Math.max(input.limit - result.count, 0),
+      retryAfterMs: allowed ? input.windowMs : Math.max(result.resetAt.getTime() - now.getTime(), 0)
     };
+  } catch {
+    // Fail open if DB is unavailable — do not block legitimate requests
+    return { allowed: true, remaining: 0, retryAfterMs: 0 };
   }
-
-  existing.count += 1;
-  store.set(input.key, existing);
-
-  const allowed = existing.count <= input.limit;
-  return {
-    allowed,
-    remaining: Math.max(input.limit - existing.count, 0),
-    retryAfterMs: Math.max(existing.resetAt - now, 0)
-  };
 }
 
-export function resetRateLimit(key: string) {
-  store.delete(key);
+export async function resetRateLimit(key: string) {
+  try {
+    await db.rateLimit.delete({ where: { key } });
+  } catch {
+    // Ignore if key doesn't exist
+  }
 }

@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getRequestSession } from "@/lib/auth";
 import { consumeRateLimit } from "@/lib/rate-limit";
+import { logAudit } from "@/lib/audit";
 import { createReceiptSchema } from "@/lib/validators";
 import { generateReceiptNumber } from "@/lib/receipt";
 
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
   }
 
   const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const rateLimit = consumeRateLimit({
+  const rateLimit = await consumeRateLimit({
     key: `receipt:create:${session.adminId}:${forwardedFor}`,
     limit: 30,
     windowMs: 10 * 60 * 1000
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    logAudit({ action: "receipt.create", adminId: session.adminId, ip: forwardedFor, meta: { receiptNumber: receipt.receiptNumber } });
     return NextResponse.json({ id: receipt.id, receiptNumber: receipt.receiptNumber }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/receipts] error:", err);

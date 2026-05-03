@@ -1,4 +1,6 @@
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -8,9 +10,26 @@ type Params = Promise<{ receiptId: string }>;
 export default async function VerifyReceiptPage({ params }: { params: Params }) {
   const { receiptId } = await params;
 
+  // Rate limit the public verify endpoint to prevent enumeration
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rl = await consumeRateLimit({ key: `verify:${ip}`, limit: 30, windowMs: 60 * 1000 });
+  if (!rl.allowed) {
+    return (
+      <main className="mx-auto min-h-screen w-full max-w-3xl px-4 py-10">
+        <Card>
+          <CardContent className="py-10 text-center text-sm text-muted-foreground">
+            Too many requests. Please try again shortly.
+          </CardContent>
+        </Card>
+      </main>
+    );
+  }
+
+  // Look up by the opaque verifyToken (UUID), not the sequential receiptNumber
   const receipt = await db.receipt.findUnique({
     where: {
-      receiptNumber: receiptId
+      verifyToken: receiptId
     },
     include: {
       customer: true,

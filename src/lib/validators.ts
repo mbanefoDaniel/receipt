@@ -26,7 +26,7 @@ export const createReceiptSchema = z.object({
 export const settingsSchema = z.object({
   businessName: z.string().min(2),
   motto: z.string().optional(),
-  logoUrl: z.string().url().optional().or(z.literal("")),
+  logoUrl: z.string().url().regex(/^https:\/\//, "Logo URL must use HTTPS").optional().or(z.literal("")),
   footerText: z.string().min(3),
   defaultWarranty: z.string().optional(),
   contactEmail: z.string().email().optional().or(z.literal("")),

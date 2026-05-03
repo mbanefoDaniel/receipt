@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { getRequestSession } from "@/lib/auth";
 import { consumeRateLimit } from "@/lib/rate-limit";
+import { logAudit } from "@/lib/audit";
 import { settingsSchema } from "@/lib/validators";
 
 export async function GET(request: NextRequest) {
@@ -26,7 +27,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const rateLimit = consumeRateLimit({
+  const rateLimit = await consumeRateLimit({
     key: `settings:update:${session.adminId}:${forwardedFor}`,
     limit: 20,
     windowMs: 10 * 60 * 1000
@@ -75,5 +76,6 @@ export async function PATCH(request: NextRequest) {
     }
   });
 
+  logAudit({ action: "settings.update", adminId: session.adminId, ip: forwardedFor });
   return NextResponse.json(settings);
 }

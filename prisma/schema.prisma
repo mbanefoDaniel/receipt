@@ -49,6 +49,7 @@ model Receipt {
   issuedAt      DateTime      @default(now())
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  verifyToken   String        @unique @default(uuid())
   customerId    String
   customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
   items         ReceiptItem[]
@@ -84,4 +85,23 @@ model BusinessSettings {
   socialHandle    String?
   address         String?
   updatedAt       DateTime @updatedAt
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  adminId   Int?
+  meta      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([action])
+  @@index([createdAt])
 }
