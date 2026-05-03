@@ -144,7 +144,23 @@ export default async function ReceiptDetailPage({ params }: { params: Params }) 
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border">
+          {/* Mobile: stacked card per item */}
+          <div className="rounded-xl border md:hidden">
+            {receipt.items.map((item, index) => (
+              <div key={item.id} className={`p-3 ${index > 0 ? "border-t" : ""} ${index % 2 === 0 ? "" : "bg-muted/30"}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <span className="font-medium">{item.description}</span>
+                  <span className="shrink-0 font-semibold">{formatCurrency(Number(item.lineTotal))}</span>
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {item.quantity} × {formatCurrency(Number(item.unitPrice))}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: full table */}
+          <div className="hidden overflow-x-auto rounded-xl border md:block">
             <table className="w-full text-sm">
               <thead className="bg-slate-900 text-white">
                 <tr>
