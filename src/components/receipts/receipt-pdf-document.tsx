@@ -5,11 +5,11 @@ Font.register({
   family: "Roboto",
   fonts: [
     {
-      src: "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Regular.ttf",
+      src: "https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.1.0/files/roboto-latin-400-normal.woff",
       fontWeight: "normal"
     },
     {
-      src: "https://raw.githubusercontent.com/google/fonts/main/apache/roboto/Roboto-Bold.ttf",
+      src: "https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.1.0/files/roboto-latin-700-normal.woff",
       fontWeight: "bold"
     }
   ]
