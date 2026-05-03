@@ -107,7 +107,7 @@ export function ReceiptPdfDocument({ receipt, settings, verifyUrl, qrDataUrl }: 
         <View style={styles.row}>
           <View>
             <Text style={styles.title}>{settings.businessName}</Text>
-            {settings.motto ? <Text style={{ ...styles.small, fontStyle: "italic" }}>{settings.motto}</Text> : null}
+            {settings.motto ? <Text style={styles.small}>{settings.motto}</Text> : null}
             <Text style={styles.small}>Receipt #{receipt.receiptNumber}</Text>
             <Text style={styles.small}>{new Date(receipt.issuedAt).toLocaleString()}</Text>
             {settings.contactPhone ? <Text style={styles.small}>Phone: {settings.contactPhone}</Text> : null}
