@@ -59,6 +59,11 @@ export default async function LoginPage({
                 Invalid email or password.
               </p>
             ) : null}
+            {params.error === "too-many-attempts" ? (
+              <p className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                Too many failed attempts. Please wait a few minutes and try again.
+              </p>
+            ) : null}
 
             <form action={loginAction} className="space-y-4">
               <div className="space-y-2">
